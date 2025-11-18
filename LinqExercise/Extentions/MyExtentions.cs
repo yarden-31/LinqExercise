@@ -17,5 +17,5 @@ namespace LinqExercise.Extentions
 		{
 			Console.WriteLine("Yud Alef 7 Metro West is the best course ever!");
 		}
-	}
+    }
 }

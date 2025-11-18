@@ -1,6 +1,7 @@
 ﻿using LinqExercise.Data;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -158,69 +159,123 @@ namespace LinqExercise.Models
 				ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Gelada-Pavian.jpg/320px-Gelada-Pavian.jpg"
 			});
 		}
-		//1
-		public Monkey SearchMonkeyByName(string name)
-		{
 
-			throw new NotImplementedException("not implemented yet");
+        //-----------------------------------------------------------
+        //1
+        public Monkey SearchMonkeyByName(string name)
+		{
+			return this.Monkeys.SingleOrDefault(monkey => monkey.Name == name);
 		}
+
+		//-----------------------------------------------------------
 		//2
 		public List<Monkey> GetAllMonkeysPerLocation(string location)
-		{
-			throw new NotImplementedException("not implemented yet");
+		{			
+			List<Monkey> MonkeysInLoaction = Monkeys.Where(monkey => monkey.Location == location).ToList();
+			return MonkeysInLoaction;
 		}
-		//3
-		public bool IsThereMonkeyInThatLocation(string location)
-		{
-			throw new NotImplementedException("not implemented yet");
-		}
-		//4
-		public List<Monkey> SortByLocattionAndName()
-		{
 
-			throw new NotImplementedException("not implemented yet");
-		}
-		//5
-		public Monkey SearchMonkeyByNameQuery(string name)
+        //-----------------------------------------------------------
+        //3
+        public bool IsThereMonkeyInThatLocation(string location)
 		{
-			throw new NotImplementedException("not implemented yet");
+			return this.Monkeys.Any(Monkeys => Monkeys.Location == location);
 		}
+
+        //-----------------------------------------------------------
+        //4
+        public List<Monkey> SortByLocattionAndName()
+		{
+            this.Monkeys = this.Monkeys.OrderBy(monkey => monkey.Location).ThenBy(monkey => monkey.Name).ToList();
+			return this.Monkeys;
+        }
+
+        //-----------------------------------------------------------
+        //5
+        public Monkey SearchMonkeyByNameQuery(string name)
+		{
+            var ls = from Monkeys in Monkeys
+                     where Monkeys.Name == name
+                     select Monkeys;
+			return ls.SingleOrDefault();
+
+        }
+
+		//-----------------------------------------------------------
 		//6
 		public List<Monkey> GetAllMonkeysPerLocationQuery(string location)
 		{
-			throw new NotImplementedException("not implemented yet");
+			var ls = from Monkeys in Monkeys
+					 where Monkeys.Location == location
+					 select Monkeys;
+			return ls.ToList();
 		}
 
-		//7
-		public List<Monkey> SortByLocattionAndNameQuery()
+        //-----------------------------------------------------------
+        //7
+        public List<Monkey> SortByLocattionAndNameQuery()
 		{
-			throw new NotImplementedException("not implemented yet");
+			var ls = from Monkeys in Monkeys
+					 orderby Monkeys.Location, Monkeys.Name
+					 select Monkeys;
+			return ls.ToList();
 		}
-		//8
-		public void PrintNumberOfMonkeysPerLocation()
+
+        //-----------------------------------------------------------
+        //8
+        public void PrintNumberOfMonkeysPerLocation()
 		{
-			Console.WriteLine("not Implemented yet");
-		}
-		//9
-		public void PrintNumberOfMonkeysPerLocationQuery()
+            var monkeysPerLoaction = Monkeys.GroupBy(monkey => monkey.Location);
+			foreach (var group in monkeysPerLoaction)
+			{
+				Console.WriteLine($"{group.Key}: {group.Count()}");
+            }
+        }
+
+        //-----------------------------------------------------------
+        //9
+        public void PrintNumberOfMonkeysPerLocationQuery()
 		{
-		Console.WriteLine("not Implemented yet");
-		}
-		//10
-		public Monkey[] GetAllMonkeysByName(string name)
+			var monkeysPerLoaction = from Monkeys in Monkeys
+					    group Monkeys by Monkeys.Location into locationGroup
+						select new { Location = locationGroup.Key, Count = locationGroup.Count() };
+			foreach (var group in monkeysPerLoaction)
+			{
+				Console.WriteLine($"{group.Location}: {group.Count}");
+            }
+
+        }
+
+        //-----------------------------------------------------------
+        //10
+        public Monkey[] GetAllMonkeysByName(string name)
 		{
-			throw new NotImplementedException("not implemented yet");
-		}
-		//11 - Create a dictionary where the key is the name of the monkey and
-		//the value is the monkey object
-		public Dictionary<string, Monkey> CreateDictionaryFromMonkeyList()
+            List<Monkey> MonkeysByName = Monkeys.Where(monkey => monkey.Name == name).ToList();
+			return MonkeysByName.ToArray();
+        }
+
+        //-----------------------------------------------------------
+        //11 - Create a dictionary where the key is the name of the monkey and
+        //the value is the monkey object
+        public Dictionary<string, Monkey> CreateDictionaryFromMonkeyList()
 		{
-			throw new NotImplementedException("not implemented yet");
-		}
-		//12 - Use the dictionary created in 11 to do the next search!
-		public bool MonkeExistByName(string name)
+			Dictionary<string, Monkey> monkeyDictionary = Monkeys.ToDictionary(monkey => monkey.Name, monkey => monkey);
+			return monkeyDictionary;
+        }
+
+        //-----------------------------------------------------------
+        //12 - Use the dictionary created in 11 to do the next search!
+        public bool MonkeExistByName(string name)
 		{
-			throw new NotImplementedException("not implemented yet");
-		}
+            Dictionary<string, Monkey> monkeyDictionary = Monkeys.ToDictionary(monkey => monkey.Name, monkey => monkey);
+            foreach (var monkeyName in monkeyDictionary)
+			{
+				if (monkeyName.Key == name)
+				{
+					return true;
+				}
+            }
+			return false;
+        }
 	}
 }

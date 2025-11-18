@@ -17,5 +17,5 @@ namespace LinqExercise.Models
 		}
 		public string ClassName { get; set;
 		}
-	}
+    }
 }
